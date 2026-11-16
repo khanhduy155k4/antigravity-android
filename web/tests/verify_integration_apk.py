@@ -32,7 +32,7 @@ with ZipFile(apk) as zipf:
                  b"__AG_NATIVE_BRIDGE_TOKEN__"):
         assert item in aux, "missing notification/sidebar fragment: " + item.decode()
     assert b"AGY_V24_VISIBLE_READ_RECEIPT" not in data, "deferred readfix leaked into APK"
-    assert b"function VAb(" in data and b"useSyncExternalStore" in data, "React subscriber absent"
+    assert b"function otc(" in data and b"useSyncExternalStore" in data, "React subscriber absent"
     assert b"window.__AGY_VERIFIED_AGENT_GET__" in data, "native confirmed-idle never consumed"
     assert b"AGY_RESUME_STREAM_V1" not in data
     assert b"onConversationSummary(window.__AG_NATIVE_BRIDGE_TOKEN__" in aux

@@ -8,12 +8,12 @@ or the Core agent itself. Fresh subscribe rehydrates state from Core.
 from pathlib import Path
 import sys
 
-HEAD = "async function Hca("
-TAIL = ";var Ke=class"
-SUM_HEAD = "function NDa()"
-SUM_TAIL = ";function Ft("
-ROUTE_ANCHOR = 'let L5=null;function t8b(a){L5&&L5.navigate({to:"/c/$cascadeId",params:{cascadeId:a}})}'
-ROUTE_INIT = 'L5=q=new xcb({routeTree:s8b,history:r,InnerWrap:n,context:d8b,basepath:q.basepath})'
+HEAD = "async function jda("
+TAIL = ";var If=class"
+SUM_HEAD = "function AQa()"
+SUM_TAIL = ";function BQa("
+ROUTE_ANCHOR = 'function rad(a){r7&&r7.navigate({to:"/c/$cascadeId",params:{cascadeId:a}})}'
+ROUTE_INIT = 'r7=n=new $jb({routeTree:nad,history:p,InnerWrap:h,context:W$c,basepath:n.basepath,parseSearch:pad,stringifySearch:qad})'
 MARKER = "/* AGY_V24_TRANSPORT_RECONNECT */"
 SUMMARY_MARKER = "/* AGY_V24_SUMMARY_RECONNECT */"
 ROUTE_MARKER = "/* AGY_V24_DEEPLINK */"
@@ -21,7 +21,7 @@ ROUTE_MARKER = "/* AGY_V24_DEEPLINK */"
 def one(s, old, new):
     count=s.count(old)
     if count!=1:
-        raise ValueError(f"expected one v2.4.0 anchor, found {count}: {old[:135]}")
+        raise ValueError(f"expected one v2.32.0 anchor, found {count}: {old[:135]}")
     return s.replace(old,new,1)
 
 def patch(s):
@@ -32,51 +32,51 @@ def patch(s):
     start=s.index(HEAD); end=s.index(TAIL,start)
     hca=s[start:end]
     hca=one(hca,
-        "B=ue(b),C=k,D=0;for(;!e.signal.aborted;)",
-        "B=ue(b),C=k,D=0,__agyRehydrate=false;for(;!e.signal.aborted;)")
-    hca=one(hca, "let E=Je();q?.(E);try{",
-        "let E=Je(),__agyResumed=false;q?.(E);try{")
-    hca=one(hca, "disableRehydration:f?.disableRehydration}),G=a(F,{signal:e.signal});for await(let H of g(G)){",
+        "z=wf(b),A=k,D=0;for(;!d.signal.aborted;)",
+        "z=wf(b),A=k,D=0,__agyRehydrate=false;for(;!d.signal.aborted;)")
+    hca=one(hca, "let C=Hf();p?.(C);try{",
+        "let C=Hf(),__agyResumed=false;p?.(C);try{")
+    hca=one(hca, "disableRehydration:f?.disableRehydration}),G=a(F,{signal:d.signal});for await(let H of g(G)){",
         'disableRehydration:__agyRehydrate?false:f?.disableRehydration}),' +
         MARKER +
         '__agyTransport=new AbortController,__agyOnResume=()=>{__agyResumed=true;__agyTransport.abort()},' +
         '__agyOnDispose=()=>__agyTransport.abort();' +
         'window.addEventListener("agy:host-resume",__agyOnResume);' +
-        'e.signal.addEventListener("abort",__agyOnDispose,{once:true});' +
+        'd.signal.addEventListener("abort",__agyOnDispose,{once:true});' +
         'try{let G=a(F,{signal:__agyTransport.signal});for await(let H of g(G)){')
-    hca=one(hca, "c(B),t?.(B))",
-        "c(B),window.__AGY_NOTIFY_AGENT_STATE__?.(B),t?.(B),__agyRehydrate=false)")
+    hca=one(hca, "c(z),t?.(z))",
+        "c(z),window.__AGY_NOTIFY_AGENT_STATE__?.(z),t?.(z),__agyRehydrate=false)")
     hca=one(hca, "}finally{g()}}h()}catch(F){",
         '}finally{g()}}}finally{' +
         'window.removeEventListener("agy:host-resume",__agyOnResume);' +
-        'e.signal.removeEventListener("abort",__agyOnDispose)' +
+        'd.signal.removeEventListener("abort",__agyOnDispose)' +
         '}h()}catch(F){')
-    hca=one(hca, "if(e.signal.aborted)break;let G=!0;",
-        "if(e.signal.aborted)break;if(__agyResumed){D=0;C=k;__agyRehydrate=true;B=ue(b);continue}let G=!0;")
-    hca=one(hca, "e.signal.aborted||h(await g(new Promise(F=>setTimeout(F,1E3))));",
-        "if(__agyResumed){D=0;C=k;__agyRehydrate=true;B=ue(b);continue}" +
-        "e.signal.aborted||h(await g(new Promise(F=>setTimeout(F,1E3))));")
+    hca=one(hca, "if(d.signal.aborted)break;let G=!0;",
+        "if(d.signal.aborted)break;if(__agyResumed){D=0;A=k;__agyRehydrate=true;z=wf(b);continue}let G=!0;")
+    hca=one(hca, "d.signal.aborted||h(await g(new Promise(F=>setTimeout(F,1E3))));",
+        "if(__agyResumed){D=0;A=k;__agyRehydrate=true;z=wf(b);continue}" +
+        "d.signal.aborted||h(await g(new Promise(F=>setTimeout(F,1E3))));")
     s=s[:start]+hca+s[end:]
 
     start=s.index(SUM_HEAD);end=s.index(SUM_TAIL,start)
     old=s[start:end]
-    summary='''function NDa(){/* AGY_V24_SUMMARY_RECONNECT */var a=null,b=null;
+    summary='''function AQa(){/* AGY_V24_SUMMARY_RECONNECT */var a=null,b=null;
 return c=>{let last=null;
 const resume=()=>{if(last)c.dispatch(last)};
 window.addEventListener("agy:host-resume",resume);
 window.addEventListener("pagehide",()=>window.removeEventListener("agy:host-resume",resume),{once:true});
-return e=>f=>{if(LDa.match(f)){
-last=f;let g=f.payload.subscribe,h=f.payload.analyticsService,k=a!==null;
-a?.abort();b?.dispose();a=new AbortController;let live=a,l=MDa(c.dispatch);b=l;
-let m=k,n=new Et(h,"trajectory_summary_load");
-$i({label:"[TrajectorySummaries]",abort:a,createStream:q=>g({signal:q}),
-onMessage:q=>{if(a!==live||live.signal.aborted)return;
-Dt(n);l.add(q,m);m=!1;
-try{window.__AGY_NOTIFY_SUMMARIES__?.(Object.entries(q.updates||{}))}catch(_){}},
-onDisconnect:()=>{if(a===live)m=!0}})}
-return e(f)}}}'''
-    if not old.startswith('function NDa(){var a=null,b=null;return c=>e=>f=>{'):
-        raise ValueError("v2.4 sidebar source changed")
+return d=>f=>{if(yQa.match(f)){
+last=f;var g=f.payload;let h=g.subscribe;g=g.analyticsService;let k=a!==null;
+a?.abort();b?.dispose();a=new AbortController;let live=a;c.dispatch(Uqa());let l=zQa(c.dispatch);b=l;
+let m=k,n=new pHa(g,wg.TRAJECTORY_SUMMARY_LOAD);
+Ei({abort:a,createStream:p=>h({signal:p}),
+onMessage:p=>{if(a!==live||live.signal.aborted)return;
+Gf("summaries_message");oHa(n);l.add(p,m);m=!1;
+try{window.__AGY_NOTIFY_SUMMARIES__?.(Object.entries(p.updates||{}))}catch(_){}},
+onDisconnect:()=>{if(a===live){m=!0;l.disconnect()}}})}
+return d(f)}}}'''
+    if not old.startswith('function AQa(){var a=null,b=null;return c=>d=>f=>{'):
+        raise ValueError("v2.32.0 sidebar source changed")
     s=s[:start]+summary+s[end:]
     s=one(s,ROUTE_ANCHOR,ROUTE_ANCHOR+ROUTE_MARKER+'''
 (function(){
@@ -110,12 +110,12 @@ window.__AGY_ATTACH_ROUTE_V24__=function(router){
 };
 window.addEventListener("agy:open-conversation",function(e){
   let id=e?.detail?.conversationId;
-  if(!valid(id)||!L5)return;
+  if(!valid(id)||!r7)return;
   pending=id;
-  try{t8b(id)}catch(_){pending=null}
+  try{rad(id)}catch(_){pending=null}
 });
 })();''')
-    s=one(s,ROUTE_INIT,ROUTE_INIT+';window.__AGY_ATTACH_ROUTE_V24__?.(L5)')
+    s=one(s,ROUTE_INIT,ROUTE_INIT+';window.__AGY_ATTACH_ROUTE_V24__?.(r7)')
     return s
 
 def main():

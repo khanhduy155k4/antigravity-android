@@ -23,21 +23,22 @@ def patch_main(file_path):
         return True
 
     # 1. State hook injection pattern in Appearance component:
-    # Matches: var C=g!==3,D=g!==2,E=F=>G=>{F===t&&v(G)}; or legacy var B=f!==3,C=f!==2,D=E=>G=>{E===r&&u(G)};
-    hook_pattern = re.compile(r'(var\s+[A-Za-z0-9_$]+=[A-Za-z0-9_$]+!==3,\s*[A-Za-z0-9_$]+=[A-Za-z0-9_$]+!==2,\s*[A-Za-z0-9_$]+=[A-Za-z0-9_$]+=>\s*[A-Za-z0-9_$]+=>\{.*?\};)')
-    hook_match = hook_pattern.search(content)
+    # Locate the Appearance section return statement right before {title:"Appearance"}
+    appearance_anchor = re.compile(
+        r'return\s+([A-Za-z0-9_$]+)\.createElement\(\1\.Fragment,null,\1\.createElement\([A-Za-z0-9_$]+,\{title:"Appearance"'
+    )
+    hook_match = appearance_anchor.search(content)
 
     # 2. JSX Theme element injection: find Theme element in Appearance
     theme_idx = content.find('{label:"Theme"')
     theme_match = None
-    react_id = "A"
+    react_id = hook_match.group(1) if hook_match else "B"
     if theme_idx != -1:
-        # Search backwards within a reasonable window (e.g. 100 chars) for createElement
         window_start = max(0, theme_idx - 100)
         window_end = min(len(content), theme_idx + 500)
         window_text = content[window_start:window_end]
         theme_pattern = re.compile(
-            r'([A-Za-z0-9_$]+)\.createElement\(([A-Za-z0-9_$]+),\{label:"Theme",.*?onSelect:[A-Za-z0-9_$]+\}\)'
+            r'([A-Za-z0-9_$]+)\.createElement\(([A-Za-z0-9_$]+),\{label:"Theme",[^}]*onSelect:[A-Za-z0-9_$]+\}\)'
         )
         theme_match = theme_pattern.search(window_text)
         if theme_match:
@@ -47,7 +48,7 @@ def patch_main(file_path):
         print(f"[web-patch] patterns not matched: hook={bool(hook_match)}, theme={bool(theme_match)}", file=sys.stderr)
         return False
 
-    orig_hook = hook_match.group(1)
+    orig_hook = hook_match.group(0)
     injected_hook = (
         f"var [isDesktop,setIsDesktop]=(0,{react_id}.useState)(()=>{{"
         "try{if(window.Android&&typeof window.Android.isDesktopMode==='function')return window.Android.isDesktopMode();"
@@ -58,19 +59,23 @@ def patch_main(file_path):
         + orig_hook
     )
 
-    # Detect switch and setting item components
-    # Look for setting item component used with rightElement or contrast setting
-    item_comp = "v3"
-    switch_comp = "dX"
-    re_idx = content.find('rightElement:')
-    if re_idx != -1:
-        re_window = content[max(0, re_idx - 150):min(len(content), re_idx + 150)]
-        item_m = re.search(r'([A-Za-z0-9_$]+)\.createElement\(([A-Za-z0-9_$]+),\{label:[^,]+,description:[^,]+,rightElement:', re_window)
-        if item_m:
-            item_comp = item_m.group(2)
-        sw_m = re.search(r'rightElement:[A-Za-z0-9_$]+\.createElement\(([A-Za-z0-9_$]+),\{checked:', re_window)
-        if sw_m:
-            switch_comp = sw_m.group(1)
+    # Detect switch and setting item components via fast substring search
+    item_comp = "KQ"
+    switch_comp = "NQ"
+    pos = 0
+    while True:
+        re_idx = content.find("rightElement:", pos)
+        if re_idx == -1:
+            break
+        re_window = content[max(0, re_idx - 180):min(len(content), re_idx + 180)]
+        if "checked:" in re_window and "onCheckedChange:" in re_window:
+            item_m = re.search(r'([A-Za-z0-9_$]+)\.createElement\(([A-Za-z0-9_$]+),\{label:', re_window)
+            sw_m = re.search(r'\.createElement\(([A-Za-z0-9_$]+),\{checked:', re_window[re_window.find("rightElement:"):])
+            if item_m and sw_m:
+                item_comp = item_m.group(2)
+                switch_comp = sw_m.group(1)
+                break
+        pos = re_idx + 13
 
     orig_theme = theme_match.group(0)
     injected_theme = (

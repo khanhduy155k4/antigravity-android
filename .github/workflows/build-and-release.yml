@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: 'Release Tag (e.g. v2.4.2)'
+        description: 'Release Tag (e.g. v2.32.0)'
         required: false
-        default: 'v2.4.2'
+        default: 'v2.32.0'
       draft:
         description: 'Create Draft Release'
         type: boolean
@@ -155,19 +155,10 @@ jobs:
 
             ---
 
-            ### Key Highlights in this Release
+            ### Key Highlights in Antigravity v2.32.0 for Android
 
-            * **Built-in Web Terminal & PTY Support (PR #19):** Enabled native built-in web terminal on Android userspace via length-preserving PTY shell binary patching (`/bin/bash` -> `/bin///sh`), resilient prioritized shell fallback hierarchy (`$PREFIX/bin/bash` -> `runtime/bin/bash` -> `/system/bin/sh`), and proper `TERM=xterm-256color` / `TERMINFO` environment configuration.
-            * **AAPT Build Reliability:** Fixed `aapt` crash with `SIGABRT (134)` on Android ARM64 userspace builds by ensuring `ANDROID_DATA` environment export.
-            * **Security Hardening (Issue #6):** Completely removed hardcoded `android:debuggable="true"` from production builds, preventing unauthorized access to OAuth credentials and internal user files via `run-as`. Dev builds now isolate debuggable flags to `--dev` builds.
-            * **Media & File Picker Overhaul (Issue #8):** Replaced SAF-only document picker with universal native Android chooser. Users can now attach photos, videos, and files directly from Gallery, Google Photos, or File Managers with automatic persistent URI permissions.
-            * **OAuth & Browser Redirection Streamlined:** Completely eliminated 80ms disk polling and temporary files. Direct stdout capture and clean native browser intent dispatching without AIDL overhead or IPC deadlocks.
-            * **ARMv8.0-A CPU Architecture & SIMD Emulation:** Added transparent atomic & SIMD emulation (`liblse_compat.so`) for FEAT_LSE, FEAT_RDM, and FEAT_FCMA, resolving `FATAL ERROR: This binary was compiled with lse enabled` and `SIGILL` crashes on Snapdragon 685 (Cortex-A53 / Redmi Note 12).
-            * **Torch / Flashlight Hardware Bridge:** Integrated hardware torch control bridge and CLI utility (`torch on/off`).
-            * **Integrated Log Export & Diagnostics:** Added "Copy Logs" and "Save Logs" actions to the startup failure splash overlay for one-tap troubleshooting.
-            * **Autonomous Background Micro-Daemon (`agy-daemon`):** Background task engine with triggers for delays, intervals, file watching, and GitHub notifications.
-
-            ---
-
-            > [!NOTE]
-            > **Seamless Upgrades:** Built with the consistent embedded signing keystore. You can install this update directly over previous v2.x releases without uninstalling or losing local projects.
+            * **Full PC v2.32.0 Core & Web UI Port:** Upgraded embedded `language_server` (`226 MB`, `go1.28-20261102-RC00`) and standalone Jetski Web UI directly from Google's official `2.32.0` Linux ARM64 distribution — including **`/swarm`**, **Dynamic Workflows**, **Knowledge Work UI**, **Gemini 4 Hydrogen & Carbon**, **Voice assets**, and **`shiki_worker` syntax highlighting**.
+            * **Generalized ARM64 Binary Patching (`modules/patches`):** Updated `crash_suppressor` for `2.32.0` Go runtime (`cpu_feature` + main/helper `preinit_atomic`), alongside `cli_gate`, `enterprise_auth`, `faccessat2`/`fchmodat2` seccomp retargeting, `sigill_handler`, `resolv_redirect`, and `pty_shell`.
+            * **v2.32.0 Android WebView Bridges & Background Recovery:** Ported `Hca`->`jda` transport reconnect, `NDa`->`AQa` summary stream recovery, `r7`/`rad` deep-linking, `otc`/`rtc` React sidebar idle proof, `interactive-widget=resizes-content` keyboard sizing, and Appearance Desktop Mode toggle.
+            * **Web Asset Refresh on Update:** `CoreInstaller` cleanly wipes stale `filesDir/web` assets when upgrading from v2.4.x to v2.32.0.
+            * **Seamless Upgrades:** Signed with the consistent embedded keystore (`DC:94:10:46:...`), allowing direct in-place upgrades over previous v2.x releases without losing sessions or local projects.

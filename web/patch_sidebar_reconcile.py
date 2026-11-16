@@ -5,16 +5,16 @@ import sys
 
 MARKER="/*AGY_SIDEBAR_RECONCILE_V24*/"
 SECONDARY_MARKER="/*AGY_SIDEBAR_RUNNING_RECONCILE_V24*/"
-PRIMARY='function VAb(a){var b=Hm(g=>Ip(g)===a),c=!KR(a),e=tz(b?a:void 0,{selector:TAb}),f=SX(a);return(b?e:c)||f}'
-REPLACEMENT=('function VAb(a){var b=Hm(g=>Ip(g)===a),c=!KR(a),'
-    'e=tz(b?a:void 0,{selector:TAb}),f=SX(a),'
-    'verifiedIdle=A.useSyncExternalStore('
+PRIMARY='function otc(a){var b=Ak(h=>Tn(h)===a),c=!nkb(b?void 0:a),d=IC(b?a:void 0,{selector:ltc}),f=pI(b?a:void 0),g=WX(a);return(b?d||f:c)||g}'
+REPLACEMENT=('function otc(a){var b=Ak(h=>Tn(h)===a),c=!nkb(b?void 0:a),'
+    'd=IC(b?a:void 0,{selector:ltc}),f=pI(b?a:void 0),g=WX(a),'
+    'verifiedIdle=B.useSyncExternalStore('
     'window.__AGY_VERIFIED_AGENT_SUBSCRIBE__||(()=>()=>{}),'
     '()=>window.__AGY_VERIFIED_AGENT_GET__?.(a)===true,()=>false);'
-    +MARKER+'return((b?e:c)&&!verifiedIdle)||f}')
-SECONDARY='t=t==="running";l=k===T.CascadeRunStatus.IDLE&&l===!1;'
-SECONDARY_REPLACEMENT=('t=t==="running"&&!window.__AGY_VERIFIED_AGENT_GET__?.(a);'
-    +SECONDARY_MARKER+'l=k===T.CascadeRunStatus.IDLE&&l===!1;')
+    +MARKER+'return((b?d||f:c)&&!verifiedIdle)||g}')
+SECONDARY='n=k||u==="running";'
+SECONDARY_REPLACEMENT=('n=k||(u==="running"&&!window.__AGY_VERIFIED_AGENT_GET__?.(a));'
+    +SECONDARY_MARKER)
 
 def patch(s):
     if MARKER in s or SECONDARY_MARKER in s:

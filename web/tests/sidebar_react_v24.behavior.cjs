@@ -1,11 +1,11 @@
 /** Execute actual extracted upstream v2.4 React VAb/z_ helpers with the packaged native-state bridge. */
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const s=fs.readFileSync(process.argv[2]||'web/generated/main.js','utf8');
-const start=s.indexOf('function VAb('),mid=s.indexOf(';function WAb(',start);
-const zs=s.indexOf('z_=({cascadeId:a',mid),ze=s.indexOf('};var YAb=',zs);
-assert(start>0&&mid>start&&zs>mid&&ze>zs,'v2.4 sidebar React helpers missing');
-const vAb=s.slice(start,mid),zAb='var '+s.slice(zs,ze+2);
-assert(vAb.includes('A.useSyncExternalStore')&&
+const start=s.indexOf('function otc('),mid=s.indexOf(';function ptc(',start);
+const zs=s.indexOf('rtc=({cascadeId:a',mid),ze=s.indexOf(';function stc(',zs);
+assert(start>0&&mid>start&&zs>mid&&ze>zs,'v2.32.0 sidebar React helpers missing');
+const vAb=s.slice(start,mid),zAb='var '+s.slice(zs,ze+1);
+assert(vAb.includes('B.useSyncExternalStore')&&
     vAb.includes('AGY_SIDEBAR_RECONCILE_V24'),'actual React subscription absent');
 assert(zAb.includes('AGY_SIDEBAR_RUNNING_RECONCILE_V24'),'secondary running predicate absent');
 const window={};
@@ -23,21 +23,21 @@ const base=require('node:fs').readFileSync('web/src/patches/web_optimizations/si
 const notifications=fs.readFileSync('web/src/patches/web_optimizations/agent-notifications.js','utf8');
 vm.runInContext(base,ctx);vm.runInContext(notifications,ctx);
 let focused='',active={},starting={},running={},calls=0,activeSubs=[];
-ctx.Hm=fn=>fn({});ctx.Ip=()=>focused;ctx.KR=id=>!active[id];
-ctx.tz=()=>focused&&running[focused]||false;ctx.SX=id=>!!starting[id];ctx.TAb=x=>x;
-ctx.A={useSyncExternalStore:(subscribe,snapshot)=>{
+ctx.Ak=fn=>fn({});ctx.Tn=()=>focused;ctx.nkb=id=>!active[id];
+ctx.IC=()=>focused&&running[focused]||false;ctx.WX=id=>!!starting[id];ctx.ltc=x=>x;
+ctx.B={useSyncExternalStore:(subscribe,snapshot)=>{
     const dispose=subscribe(()=>calls++);activeSubs.push(dispose);return snapshot();
   },createElement:(type,props,...children)=>({type,props,children})};
-ctx.T={CascadeRunStatus:{IDLE:1}};
-ctx.UZ='UZ';ctx.W='W';ctx.XAb=()=>null;
-for(const f of ['rdb','sdb','qdb','VR','UR','Ddb','pY','Gpb','Bdb','bN','WAb'])
+ctx.J={CascadeRunStatus:{IDLE:1}};
+ctx.Gi=(...a)=>a.join(' ');ctx.nq='nq';ctx.e1='e1';ctx.qtc='qtc';
+for(const f of ['Fkb','Gkb','Ekb','pI','ptc','zI','Tkb','Z4b','Gqa'])
     ctx[f]=()=>undefined;
-ctx.pY=id=>active[id]?'running':'ready';
-ctx.KR=id=>!active[id];
+ctx.Gqa=()=>({isBackgroundWorking:false});
+ctx.X4b=id=>active[id]?'running':'ready';
 vm.runInContext(vAb,ctx);vm.runInContext(zAb,ctx);
 function test(name,fn){fn();console.log('PASS',name)}
-const render=(id)=>ctx.z_({cascadeId:id,timestamp:'idleOnly'}).props;
-test('actual React z_ renders original notFullyIdle as Working',()=>{
+const render=(id)=>ctx.rtc({cascadeId:id,timestamp:'idleOnly'}).props;
+test('actual React rtc renders original notFullyIdle as Working',()=>{
  active.A=true;active.B=false;assert.equal(render('A').isLoading,true);
  assert.equal(render('B').isLoading,false);
 });
@@ -45,7 +45,7 @@ test('native Core RUNNING retains Working for exactly one dialog',()=>{
  window.__AGY_NOTIFY_AGENT_STATE__({conversationId:'A',status:2,fullyIdle:false});
  assert.equal(render('A').isLoading,true);
 });
-test('Core IDLE fullyIdle suppresses stale React isLoading in actual z_',()=>{
+test('Core IDLE fullyIdle suppresses stale React isLoading in actual rtc',()=>{
  window.__AGY_NOTIFY_AGENT_STATE__({conversationId:'A',status:1,fullyIdle:true});
  assert.equal(render('A').isLoading,false);
 });
@@ -64,8 +64,8 @@ test('a real second RUNNING re-enables React indicator after completion',()=>{
 test('selected React e source follows native proof while optimistic starting remains',()=>{
  focused='A';running.A=true;
  window.__AGY_NOTIFY_AGENT_STATE__({conversationId:'A',status:1,fullyIdle:true});
- assert.equal(ctx.VAb('A'),false);
- starting.A=true;assert.equal(ctx.VAb('A'),true);
+ assert.equal(ctx.otc('A'),false);
+ starting.A=true;assert.equal(ctx.otc('A'),true);
  starting.A=false;focused='';
 });
 test('React receives real listener events and cleans up on unmount',()=>{

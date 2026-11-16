@@ -47,6 +47,7 @@ public final class CoreInstaller {
         }
         if (!isWebExtracted(rm)) {
             try {
+                wipe(rm, rm.getWebDir());
                 AssetUnpacker.unpackTree(ctx.getAssets(), RuntimePaths.WEB_ASSET, rm.getWebDir());
                 writeMarker(rm.getWebDir(), RuntimePaths.WEB_MARKER);
             } catch (IOException e) {
@@ -101,7 +102,7 @@ public final class CoreInstaller {
 
     private static boolean isWebExtracted(RuntimeManager rm) {
         File marker = new File(rm.getWebDir(), RuntimePaths.WEB_MARKER);
-        if (!marker.isFile() || !new File(rm.getWebDir(), "main.js").isFile()) {
+        if (!marker.isFile() || !new File(rm.getWebDir(), "generated/main.js").isFile()) {
             return false;
         }
         try {
